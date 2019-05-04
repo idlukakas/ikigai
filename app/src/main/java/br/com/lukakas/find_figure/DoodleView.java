@@ -1,7 +1,9 @@
 package br.com.lukakas.find_figure;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,6 +13,9 @@ import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -114,8 +119,9 @@ public class DoodleView extends View {
         paintClear.setStyle(Paint.Style.FILL);
         paint.setStyle(Paint.Style.FILL);
         textPaint.setAntiAlias(true);
-        textPaint.setTextSize(100 * getResources().getDisplayMetrics().density);
-        textPaint.setColor(Color.GREEN);
+//        textPaint.setTextSize(100 * getResources().getDisplayMetrics().density);
+        textPaint.setTextSize(38f);
+        textPaint.setColor(Color.BLACK);
         textPaint.setStrokeWidth(3);
 
         // ** clear canvas background to white**
@@ -144,10 +150,27 @@ public class DoodleView extends View {
 //        paint.setColor(Color.YELLOW);
         compositeCanvas.drawCircle(posicoes.get(3).x, posicoes.get(3).y, radius, gerarPaint(paint));
 
+        compositeCanvas.save();
+        mode = PorterDuff.Mode.	SRC_OVER;
+        textPaint.setXfermode(new PorterDuffXfermode(mode));
+        paint.setTextSize(48f);
+        paint.setColor(Color.BLACK);
+        compositeCanvas.drawText("IKIGAI",posicoes.get(0).x-60,posicoes.get(2).y-radius/2-30,textPaint);
+
+        compositeCanvas.drawText("MISSÃO",(posicoes.get(0).x+posicoes.get(3).x)/2,(posicoes.get(0).y+posicoes.get(3).y)/2-60,textPaint);
+
+        compositeCanvas.drawText("VOCAÇÃO",(posicoes.get(3).x+posicoes.get(2).x)/2-20,(posicoes.get(3).y+posicoes.get(2).y)/2+60,textPaint);
+
+        compositeCanvas.drawText("PAIXÃO",(posicoes.get(0).x+posicoes.get(1).x)/2-130,(posicoes.get(0).y+posicoes.get(1).y)/2-60,textPaint);
+
+        compositeCanvas.drawText("PROFISSÃO",(posicoes.get(1).x+posicoes.get(2).x)/2-168,(posicoes.get(3).y+posicoes.get(2).y)/2+60,textPaint);
+
+        compositeCanvas.restore();
+
         // ** draw text in Green **
         compositeCanvas.save();
         compositeCanvas.rotate(-45, x, y+150);
-        compositeCanvas.drawText("- 65,6", x, y+150, textPaint);
+//        compositeCanvas.drawText("- 65,6", x, y+150, textPaint);
         compositeCanvas.restore();
 
         //copy compositeCanvas to canvas
@@ -440,3 +463,24 @@ public class DoodleView extends View {
         return false;
     }
 }
+
+//public class FireMissilesDialogFragment extends DialogFragment {
+//    @Override
+//    public Dialog onCreateDialog(Bundle savedInstanceState) {
+//        // Use the Builder class for convenient dialog construction
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//        builder.setMessage("nfjdnfjd")
+//                .setPositiveButton("jdknfsjdn", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        // FIRE ZE MISSILES!
+//                    }
+//                })
+//                .setNegativeButton("sdjnjdn", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        // User cancelled the dialog
+//                    }
+//                });
+//        // Create the AlertDialog object and return it
+//        return builder.create();
+//    }
+//}

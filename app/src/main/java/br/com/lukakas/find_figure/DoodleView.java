@@ -267,21 +267,21 @@ public class DoodleView extends View {
         return i+1;
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if(whichCircle(event) == 0){
-            Toast.makeText(getContext(), "Primeiro", Toast.LENGTH_SHORT).show();
-        } else if (whichCircle(event) == 1) {
-            Toast.makeText(getContext(), "Segundo", Toast.LENGTH_SHORT).show();
-        } else if (whichCircle(event) == 2) {
-            Toast.makeText(getContext(), "Terceiro", Toast.LENGTH_SHORT).show();
-        } else if (whichCircle(event) == 3) {
-            Toast.makeText(getContext(), "Quarto", Toast.LENGTH_SHORT).show();
-        }
-        invalidate();
-
-        return false;
-    }
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        if(whichCircle(event) == 0){
+//            Toast.makeText(getContext(), "Primeiro", Toast.LENGTH_SHORT).show();
+//        } else if (whichCircle(event) == 1) {
+//            Toast.makeText(getContext(), "Segundo", Toast.LENGTH_SHORT).show();
+//        } else if (whichCircle(event) == 2) {
+//            Toast.makeText(getContext(), "Terceiro", Toast.LENGTH_SHORT).show();
+//        } else if (whichCircle(event) == 3) {
+//            Toast.makeText(getContext(), "Quarto", Toast.LENGTH_SHORT).show();
+//        }
+//        invalidate();
+//
+//        return false;
+//    }
 
     private void decreasePoint() {
         if(score != 0) {
@@ -398,5 +398,45 @@ public class DoodleView extends View {
         // paint.setColor(Color.WHITE);
         paint.setColor(Color.argb(255, r, g, b));
         return paint;
+    }
+
+    public boolean isOnCircle(MotionEvent event, int i){
+        if(Math.sqrt(Math.pow(event.getX() - posicoes.get(i).x, 2) +
+                Math.pow(event.getY() - posicoes.get(i).y, 2)) <= radius) {
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        //apenas em um circulo
+        if(isOnCircle(event, 0)&&!isOnCircle(event,1)&&!isOnCircle(event,2)&&!isOnCircle(event,3)){
+            Toast.makeText(getContext(), "1", Toast.LENGTH_SHORT).show();
+        }
+        else if(!isOnCircle(event,0)&&isOnCircle(event,1)&&!isOnCircle(event,2)&&!isOnCircle(event,3)){
+            Toast.makeText(getContext(), "2", Toast.LENGTH_SHORT).show();
+        }
+        else if(!isOnCircle(event,0)&&!isOnCircle(event,1)&&isOnCircle(event,2)&&!isOnCircle(event,3)){
+            Toast.makeText(getContext(), "3", Toast.LENGTH_SHORT).show();
+        }
+        else if(!isOnCircle(event,0)&&!isOnCircle(event,1)&&!isOnCircle(event,2)&&isOnCircle(event,3)){
+            Toast.makeText(getContext(), "4", Toast.LENGTH_SHORT).show();
+        }
+        //------------------------------------------------------------------------------------------
+        else if(isOnCircle(event,0)&& isOnCircle(event,1)&&!isOnCircle(event,2)&& !isOnCircle(event,3)){
+            Toast.makeText(getContext(), "5", Toast.LENGTH_SHORT).show();
+        }
+        else if(isOnCircle(event,0)&&!isOnCircle(event,1)&&!isOnCircle(event,2)&& isOnCircle(event,3)){
+            Toast.makeText(getContext(), "6", Toast.LENGTH_SHORT).show();
+        }
+        else if(!isOnCircle(event,0)&&isOnCircle(event,1)&&isOnCircle(event,2)&& !isOnCircle(event,3)){
+            Toast.makeText(getContext(), "7", Toast.LENGTH_SHORT).show();
+        }
+        else if(!isOnCircle(event,0)&&!isOnCircle(event,1)&&isOnCircle(event,2)&& isOnCircle(event,3)){
+            Toast.makeText(getContext(), "8", Toast.LENGTH_SHORT).show();
+        }
+        invalidate();
+        return false;
     }
 }

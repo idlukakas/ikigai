@@ -101,12 +101,12 @@ public class DoodleView extends View {
         Paint paintClear     = new Paint();
         TextPaint textPaint  = new TextPaint();
         int width            = getWidth();
-        int height           = getHeight();
+        int height           = getWidth();
         int x                = 300;
         int y                = 300;
-        float radius           = (float) (width*1.7/6);
+        float radius           = (float) (width*1.5/6);
 
-        PorterDuff.Mode mode        = PorterDuff.Mode.ADD;      // mode Mode.ADD
+        PorterDuff.Mode mode = PorterDuff.Mode.OVERLAY;      // mode Mode.ADD
 
         paintClear.setStyle(Paint.Style.FILL);
         paint.setStyle(Paint.Style.FILL);
@@ -120,26 +120,26 @@ public class DoodleView extends View {
         canvas.drawPaint(paintClear);
         //canvas.save();
 
-        Bitmap compositeBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap compositeBitmap = Bitmap.createBitmap(getWidth(), getWidth(), Bitmap.Config.ARGB_8888);
         Canvas compositeCanvas = new Canvas(compositeBitmap);
         paintClear.setColor(Color.TRANSPARENT);
         compositeCanvas.drawPaint(paintClear);
 
         // ** draw destination circle in red **
         paint.setColor(Color.RED);
-        compositeCanvas.drawCircle(posicoes.get(0).x, posicoes.get(0).y, radius, paint);
+        compositeCanvas.drawCircle(posicoes.get(0).x, posicoes.get(0).y, radius, gerarPaint(paint));
 
         // ** set Xfermode **
         paint.setXfermode(new PorterDuffXfermode(mode));
         textPaint.setXfermode(new PorterDuffXfermode(mode));
 
         // ** draw source circle in blue **
-        paint.setColor(Color.BLUE);
-        compositeCanvas.drawCircle(posicoes.get(1).x, posicoes.get(1).y, radius, paint);
-        paint.setColor(Color.GREEN);
-        compositeCanvas.drawCircle(posicoes.get(2).x, posicoes.get(2).y, radius, paint);
-        paint.setColor(Color.YELLOW);
-        compositeCanvas.drawCircle(posicoes.get(3).x, posicoes.get(3).y, radius, paint);
+//        paint.setColor(Color.BLUE);
+        compositeCanvas.drawCircle(posicoes.get(1).x, posicoes.get(1).y, radius, gerarPaint(paint));
+//        paint.setColor(Color.GREEN);
+        compositeCanvas.drawCircle(posicoes.get(2).x, posicoes.get(2).y, radius, gerarPaint(paint));
+//        paint.setColor(Color.YELLOW);
+        compositeCanvas.drawCircle(posicoes.get(3).x, posicoes.get(3).y, radius, gerarPaint(paint));
 
         // ** draw text in Green **
         compositeCanvas.save();
@@ -266,12 +266,13 @@ public class DoodleView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(checkIfPoint(event)){
-            addPoint();
-        } else {
-            decreasePoint();
-        }
+//        if(checkIfPoint(event)){
+//            addPoint();
+//        } else {
+//            decreasePoint();
+//        }
         invalidate();
+
         return false;
     }
 
@@ -347,7 +348,7 @@ public class DoodleView extends View {
     public ArrayList<Point> gerarPosicoes(){
         ArrayList<Point> Ponteiros = new ArrayList<>();
         int x = getWidth();
-        int y = getHeight();
+        int y = getWidth();
         Point posição1 = new Point(3*x/6,2*y/6);
         Point posição2 = new Point(2*x/6,3*y/6);
         Point posição3 = new Point(3*x/6,4*y/6);

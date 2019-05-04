@@ -32,6 +32,8 @@ public class DoodleView extends View {
 
     private static final int RADIUS = 200;
 
+    private float radius;
+
     private TextView chooseTextView;
 
     private Bitmap bitmap;
@@ -68,6 +70,8 @@ public class DoodleView extends View {
 
     private int round;
 
+    private ArrayList<Point> posicoes = new ArrayList<>();
+
     public DoodleView (Context context, AttributeSet set){
         super (context, set);
         paintScreen = new Paint();
@@ -93,7 +97,6 @@ public class DoodleView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        ArrayList<Point> posicoes = new ArrayList<>();
         posicoes = gerarPosicoes();
 
 
@@ -104,7 +107,7 @@ public class DoodleView extends View {
         int height           = getWidth();
         int x                = 300;
         int y                = 300;
-        float radius           = (float) (width*1.5/6);
+        radius           = (float) (width*1.5/6);
 
         PorterDuff.Mode mode = PorterDuff.Mode.OVERLAY;      // mode Mode.ADD
 
@@ -266,11 +269,15 @@ public class DoodleView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-//        if(checkIfPoint(event)){
-//            addPoint();
-//        } else {
-//            decreasePoint();
-//        }
+        if(whichCircle(event) == 0){
+            Toast.makeText(getContext(), "Primeiro", Toast.LENGTH_SHORT).show();
+        } else if (whichCircle(event) == 1) {
+            Toast.makeText(getContext(), "Segundo", Toast.LENGTH_SHORT).show();
+        } else if (whichCircle(event) == 2) {
+            Toast.makeText(getContext(), "Terceiro", Toast.LENGTH_SHORT).show();
+        } else if (whichCircle(event) == 3) {
+            Toast.makeText(getContext(), "Quarto", Toast.LENGTH_SHORT).show();
+        }
         invalidate();
 
         return false;
@@ -324,6 +331,25 @@ public class DoodleView extends View {
         return false;
     }
 
+    private int whichCircle(MotionEvent event) {
+        // Verificar qual circulo ele tocou
+        if(Math.sqrt(Math.pow(event.getX() - posicoes.get(0).x, 2) +
+                Math.pow(event.getY() - posicoes.get(0).y, 2)) <= radius) {
+            return 0;
+        } else if (Math.sqrt(Math.pow(event.getX() - posicoes.get(1).x, 2) +
+                Math.pow(event.getY() - posicoes.get(1).y, 2)) <= radius) {
+            return 1;
+        } else if (Math.sqrt(Math.pow(event.getX() - posicoes.get(2).x, 2) +
+                Math.pow(event.getY() - posicoes.get(2).y, 2)) <= radius) {
+            return 2;
+        } else if (Math.sqrt(Math.pow(event.getX() - posicoes.get(3).x, 2) +
+                Math.pow(event.getY() - posicoes.get(3).y, 2)) <= radius) {
+            return 3;
+        }
+        return 4;
+    }
+
+
     private boolean itsMyrRect(MotionEvent event) {
         // Returns true if (x,y) is inside the rectangle.
         if(rectObj.contains((int)event.getX(), (int)event.getY())){
@@ -349,15 +375,14 @@ public class DoodleView extends View {
         ArrayList<Point> Ponteiros = new ArrayList<>();
         int x = getWidth();
         int y = getWidth();
-        Point posição1 = new Point(3*x/6,2*y/6);
-        Point posição2 = new Point(2*x/6,3*y/6);
-        Point posição3 = new Point(3*x/6,4*y/6);
-        Point posição4 = new Point(4*x/6,3*y/6);
-        Ponteiros.add(posição1);
-        Ponteiros.add(posição2);
-        Ponteiros.add(posição3);
-        Ponteiros.add(posição4);
-
+        Point posicao = new Point(3*x/6,2*y/6);
+        Point posicao1 = new Point(2*x/6,3*y/6);
+        Point posicao2 = new Point(3*x/6,4*y/6);
+        Point posicao3 = new Point(4*x/6,3*y/6);
+        Ponteiros.add(posicao);
+        Ponteiros.add(posicao1);
+        Ponteiros.add(posicao2);
+        Ponteiros.add(posicao3);
 
         return Ponteiros;
 

@@ -2,9 +2,10 @@ package br.com.lukakas.find_figure;
 
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.widget.Toolbar;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -15,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar =
                 findViewById(R.id.toolBar);
-        setSupportActionBar(toolbar);
+//        setSupportActionBar(toolbar);
         Configuration c = getResources().getConfiguration();
         int screenLayout = c.screenLayout;
         int screenSize = screenLayout

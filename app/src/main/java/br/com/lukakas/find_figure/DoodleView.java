@@ -1,5 +1,6 @@
 package br.com.lukakas.find_figure;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -14,17 +15,21 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
+import android.os.Handler;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
+import com.skydoves.colorpickerview.ColorEnvelope;
+import com.skydoves.colorpickerview.ColorPickerDialog;
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
 
 import java.util.ArrayList;
@@ -53,9 +58,9 @@ public class DoodleView extends View {
 
     private int sqr;
 
-    private int circle;
+    private int currentCircle0Color, currentCircle1Color, currentCircle2Color, currentCircle3Color;
 
-    private int triangle;
+    private int triangle, circle;
 
     private int rect;
 
@@ -73,9 +78,13 @@ public class DoodleView extends View {
 
     private TextView scoreTextView;
 
-    private int round;
+    private int numCircle;
 
     private ArrayList<Point> posicoes = new ArrayList<>();
+
+    private Paint paintCircle0,paintCircle1,paintCircle2,paintCircle3;
+
+    private boolean firstTime = true;
 
     public DoodleView (Context context, AttributeSet set){
         super (context, set);
@@ -87,7 +96,7 @@ public class DoodleView extends View {
         paintLine.setStrokeWidth(10);
         paintLine.setStrokeCap(Paint.Cap.ROUND);
         score = 0;
-        round = 0;
+//        round = 0;
     }
 
     @Override
@@ -135,8 +144,14 @@ public class DoodleView extends View {
         compositeCanvas.drawPaint(paintClear);
 
         // ** draw destination circle in red **
-        paint.setColor(Color.RED);
-        compositeCanvas.drawCircle(posicoes.get(0).x, posicoes.get(0).y, radius, gerarPaint(paint));
+//        paint.setColor(Color.RED);
+        if(firstTime) {
+            paintCircle0 = gerarPaint(paint);
+            currentCircle0Color = paintCircle0.getColor();
+        } else {
+            paintCircle0.setColor(currentCircle0Color);
+        }
+        compositeCanvas.drawCircle(posicoes.get(0).x, posicoes.get(0).y, radius, paintCircle0);
 
         // ** set Xfermode **
         paint.setXfermode(new PorterDuffXfermode(mode));
@@ -144,11 +159,29 @@ public class DoodleView extends View {
 
         // ** draw source circle in blue **
 //        paint.setColor(Color.BLUE);
-        compositeCanvas.drawCircle(posicoes.get(1).x, posicoes.get(1).y, radius, gerarPaint(paint));
+        if(firstTime){
+            paintCircle1 = gerarPaint(paint);
+            currentCircle1Color = paintCircle1.getColor();
+        } else {
+            paintCircle1.setColor(currentCircle1Color);
+        }
+        compositeCanvas.drawCircle(posicoes.get(1).x, posicoes.get(1).y, radius, paintCircle1);
 //        paint.setColor(Color.GREEN);
-        compositeCanvas.drawCircle(posicoes.get(2).x, posicoes.get(2).y, radius, gerarPaint(paint));
+        if(firstTime) {
+            paintCircle2 = gerarPaint(paint);
+            currentCircle2Color = paintCircle2.getColor();
+        } else {
+            paintCircle2.setColor(currentCircle2Color);
+        }
+        compositeCanvas.drawCircle(posicoes.get(2).x, posicoes.get(2).y, radius, paintCircle2);
 //        paint.setColor(Color.YELLOW);
-        compositeCanvas.drawCircle(posicoes.get(3).x, posicoes.get(3).y, radius, gerarPaint(paint));
+        if(firstTime) {
+            paintCircle3 = gerarPaint(paint);
+            currentCircle3Color = paintCircle3.getColor();
+        } else {
+            paintCircle3.setColor(currentCircle3Color);
+        }
+        compositeCanvas.drawCircle(posicoes.get(3).x, posicoes.get(3).y, radius, paintCircle3);
 
         compositeCanvas.save();
         mode = PorterDuff.Mode.	SRC_OVER;
@@ -176,6 +209,7 @@ public class DoodleView extends View {
         //copy compositeCanvas to canvas
         canvas.drawBitmap(compositeBitmap, 0, 0, null);
         //canvas.restore();
+        firstTime = false;
     }//onDraw
 
     private void drawSquare(Canvas canvasBitmap, Paint paintLine, int pos) {
@@ -412,7 +446,8 @@ public class DoodleView extends View {
     }
 
     public Paint gerarPaint(Paint paint){
-        // Paint paint = new Paint();
+//        Paint newPaint;
+//        newPaint = paint;
         Random random = new Random ();
         int r = random.nextInt(155)+100;
         int g = random.nextInt(155)+100;
@@ -430,21 +465,60 @@ public class DoodleView extends View {
         }
         return false;
     }
-    
+
+//    final Handler handler = new Handler();
+//    Runnable mLongPressed = new Runnable() {
+//        public void run() {
+//            Log.i("teste", "Long press!");
+//        }
+//    };
+//
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+//        if(event.getAction() == MotionEvent.ACTION_DOWN)
+//            handler.postDelayed(mLongPressed, ViewConfiguration.getLongPressTimeout());
+//        if((event.getAction() == MotionEvent.ACTION_MOVE)||(event.getAction() == MotionEvent.ACTION_UP))
+//            handler.removeCallbacks(mLongPressed);
         //apenas em um circulo
+
         if(isOnCircle(event, 0)&&!isOnCircle(event,1)&&!isOnCircle(event,2)&&!isOnCircle(event,3)){
             Toast.makeText(getContext(), "1", Toast.LENGTH_SHORT).show();
+            // 1. Instantiate an AlertDialog.Builder with its constructor
+//            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+//
+//            // 2. Chain together various setter methods to set the dialog characteristics
+//            builder.setMessage("jhuhjhhjh")
+//                    .setTitle("dfbsdb");
+//
+//            // Add the buttons
+//            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                public void onClick(DialogInterface dialog, int id) {
+//                    // User clicked OK button
+//                }
+//            });
+//            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                public void onClick(DialogInterface dialog, int id) {
+//                    // User cancelled the dialog
+//                }
+//            });
+//
+//            // 3. Get the AlertDialog from create()
+//            AlertDialog dialog = builder.create();
+//
+//            dialog.show();
+            setByColorPicker(0);
         }
         else if(!isOnCircle(event,0)&&isOnCircle(event,1)&&!isOnCircle(event,2)&&!isOnCircle(event,3)){
             Toast.makeText(getContext(), "2", Toast.LENGTH_SHORT).show();
+            setByColorPicker(1);
         }
         else if(!isOnCircle(event,0)&&!isOnCircle(event,1)&&isOnCircle(event,2)&&!isOnCircle(event,3)){
             Toast.makeText(getContext(), "3", Toast.LENGTH_SHORT).show();
+            setByColorPicker(2);
         }
         else if(!isOnCircle(event,0)&&!isOnCircle(event,1)&&!isOnCircle(event,2)&&isOnCircle(event,3)){
             Toast.makeText(getContext(), "4", Toast.LENGTH_SHORT).show();
+            setByColorPicker(3);
         }
         //------------------------------------------------------------------------------------------
         else if(isOnCircle(event,0)&& isOnCircle(event,1)&&!isOnCircle(event,2)&& !isOnCircle(event,3)){
@@ -459,28 +533,43 @@ public class DoodleView extends View {
         else if(!isOnCircle(event,0)&&!isOnCircle(event,1)&&isOnCircle(event,2)&& isOnCircle(event,3)){
             Toast.makeText(getContext(), "8", Toast.LENGTH_SHORT).show();
         }
-        invalidate();
+//        invalidate();
         return false;
     }
+    public void setByColorPicker(int numCircle){
+        new ColorPickerDialog.Builder(getContext())
+                .setTitle("ColorPicker Dialog")
+                .setPreferenceName("MyColorPickerDialog")
+                .setPositiveButton("Confirm",
+                        new ColorEnvelopeListener() {
+                            @Override
+                            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
+                                switch (numCircle) {
+                                    case 0:
+                                        currentCircle0Color = envelope.getColor();
+                                        break;
+                                    case 1:
+                                        currentCircle1Color = envelope.getColor();
+                                        break;
+                                    case 2:
+                                        currentCircle2Color = envelope.getColor();
+                                        break;
+                                    case 3:
+                                        currentCircle3Color = envelope.getColor();
+                                        break;
+                                }
+                                invalidate();
+                            }
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                .attachAlphaSlideBar(true) // default is true. If false, do not show the AlphaSlideBar.
+                .attachBrightnessSlideBar(true)  // default is true. If false, do not show the BrightnessSlideBar.
+                .show();
+    }
 }
-
-//public class FireMissilesDialogFragment extends DialogFragment {
-//    @Override
-//    public Dialog onCreateDialog(Bundle savedInstanceState) {
-//        // Use the Builder class for convenient dialog construction
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        builder.setMessage("nfjdnfjd")
-//                .setPositiveButton("jdknfsjdn", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        // FIRE ZE MISSILES!
-//                    }
-//                })
-//                .setNegativeButton("sdjnjdn", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        // User cancelled the dialog
-//                    }
-//                });
-//        // Create the AlertDialog object and return it
-//        return builder.create();
-//    }
-//}

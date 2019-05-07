@@ -2,6 +2,7 @@ package br.com.lukakas.find_figure;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,6 +23,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -85,6 +87,8 @@ public class DoodleView extends View {
     private Paint paintCircle0,paintCircle1,paintCircle2,paintCircle3;
 
     private boolean firstTime = true;
+
+    private String text0="",text1="",text2="",text3="";
 
     public DoodleView (Context context, AttributeSet set){
         super (context, set);
@@ -197,6 +201,11 @@ public class DoodleView extends View {
         compositeCanvas.drawText("PAIXÃO",(posicoes.get(0).x+posicoes.get(1).x)/2-130,(posicoes.get(0).y+posicoes.get(1).y)/2-60,textPaint);
 
         compositeCanvas.drawText("PROFISSÃO",(posicoes.get(1).x+posicoes.get(2).x)/2-168,(posicoes.get(3).y+posicoes.get(2).y)/2+60,textPaint);
+
+        compositeCanvas.drawText(text0 ,posicoes.get(0).x-100,posicoes.get(0).y-160,textPaint);
+        compositeCanvas.drawText(text1 ,posicoes.get(1).x-250,posicoes.get(1).y,textPaint);
+        compositeCanvas.drawText(text2 ,posicoes.get(2).x-100,posicoes.get(2).y+200,textPaint);
+        compositeCanvas.drawText(text3 ,posicoes.get(3).x+100,posicoes.get(3).y,textPaint);
 
         compositeCanvas.restore();
 
@@ -466,59 +475,81 @@ public class DoodleView extends View {
         return false;
     }
 
-//    final Handler handler = new Handler();
-//    Runnable mLongPressed = new Runnable() {
-//        public void run() {
-//            Log.i("teste", "Long press!");
-//        }
-//    };
-//
+    //Declare this flag globally
+    boolean goneFlag = false;
+    MotionEvent mainEvent;
+
+    //Put this into the class
+    final Handler handler = new Handler();
+    Runnable mLongPressed = new Runnable() {
+        public void run() {
+            goneFlag = true;
+            //Code for long click
+            Toast.makeText(getContext(), "que merda", Toast.LENGTH_SHORT).show();
+            whichCircleTouch(mainEvent, 0);
+        }
+    };
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-//        if(event.getAction() == MotionEvent.ACTION_DOWN)
-//            handler.postDelayed(mLongPressed, ViewConfiguration.getLongPressTimeout());
-//        if((event.getAction() == MotionEvent.ACTION_MOVE)||(event.getAction() == MotionEvent.ACTION_UP))
-//            handler.removeCallbacks(mLongPressed);
-        //apenas em um circulo
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                goneFlag = false;
+                handler.postDelayed(mLongPressed, 1000);
+                //This is where my code for movement is initialized to get original location.
+                break;
+            case MotionEvent.ACTION_UP:
+                handler.removeCallbacks(mLongPressed);
+                if (mainEvent == null) {
+                    mainEvent = event;
+                }
+                if(!goneFlag) {
+                    //Code for single click
+                    Toast.makeText(getContext(), "que merda2", Toast.LENGTH_SHORT).show();
+                    whichCircleTouch(event, 0);
+                    return false;
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                handler.removeCallbacks(mLongPressed);
+                //Code for movement here. This may include using a window manager to update the view
+                break;
+        }
+        return true;
+    }
 
+    public void whichCircleTouch(MotionEvent event, int option){
         if(isOnCircle(event, 0)&&!isOnCircle(event,1)&&!isOnCircle(event,2)&&!isOnCircle(event,3)){
             Toast.makeText(getContext(), "1", Toast.LENGTH_SHORT).show();
-            // 1. Instantiate an AlertDialog.Builder with its constructor
-//            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-//
-//            // 2. Chain together various setter methods to set the dialog characteristics
-//            builder.setMessage("jhuhjhhjh")
-//                    .setTitle("dfbsdb");
-//
-//            // Add the buttons
-//            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                public void onClick(DialogInterface dialog, int id) {
-//                    // User clicked OK button
-//                }
-//            });
-//            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                public void onClick(DialogInterface dialog, int id) {
-//                    // User cancelled the dialog
-//                }
-//            });
-//
-//            // 3. Get the AlertDialog from create()
-//            AlertDialog dialog = builder.create();
-//
-//            dialog.show();
-            setByColorPicker(0);
+            if(option == 0) {
+                setByColorPicker(0);
+            } else {
+                DialogText(0);
+            }
         }
         else if(!isOnCircle(event,0)&&isOnCircle(event,1)&&!isOnCircle(event,2)&&!isOnCircle(event,3)){
             Toast.makeText(getContext(), "2", Toast.LENGTH_SHORT).show();
-            setByColorPicker(1);
+            if(option == 0) {
+                setByColorPicker(1);
+            } else {
+                DialogText(1);
+            }
         }
         else if(!isOnCircle(event,0)&&!isOnCircle(event,1)&&isOnCircle(event,2)&&!isOnCircle(event,3)){
             Toast.makeText(getContext(), "3", Toast.LENGTH_SHORT).show();
-            setByColorPicker(2);
+            if(option == 0) {
+                setByColorPicker(2);
+            } else {
+                DialogText(2);
+            }
         }
         else if(!isOnCircle(event,0)&&!isOnCircle(event,1)&&!isOnCircle(event,2)&&isOnCircle(event,3)){
             Toast.makeText(getContext(), "4", Toast.LENGTH_SHORT).show();
-            setByColorPicker(3);
+            if(option == 0) {
+                setByColorPicker(3);
+            } else {
+                DialogText(3);
+            }
         }
         //------------------------------------------------------------------------------------------
         else if(isOnCircle(event,0)&& isOnCircle(event,1)&&!isOnCircle(event,2)&& !isOnCircle(event,3)){
@@ -533,13 +564,27 @@ public class DoodleView extends View {
         else if(!isOnCircle(event,0)&&!isOnCircle(event,1)&&isOnCircle(event,2)&& isOnCircle(event,3)){
             Toast.makeText(getContext(), "8", Toast.LENGTH_SHORT).show();
         }
-//        invalidate();
-        return false;
     }
+
     public void setByColorPicker(int numCircle){
+        String texto="";
+        if(numCircle==0){
+            texto="O que você ama?";
+        }
+        if(numCircle==1){
+            texto="Em que voce é bom?";
+        }
+        if(numCircle==2){
+            texto="Pelo que voce pode ser pago?";
+        }
+        if(numCircle==3){
+            texto="O que o mundo precisa?";
+        }
+        EditText input = new EditText(getContext());
         new ColorPickerDialog.Builder(getContext())
                 .setTitle("ColorPicker Dialog")
-                .setPreferenceName("MyColorPickerDialog")
+                .setMessage(texto)
+                .setView(input)
                 .setPositiveButton("Confirm",
                         new ColorEnvelopeListener() {
                             @Override
@@ -547,15 +592,19 @@ public class DoodleView extends View {
                                 switch (numCircle) {
                                     case 0:
                                         currentCircle0Color = envelope.getColor();
+                                        text0 = input.getText().toString();
                                         break;
                                     case 1:
                                         currentCircle1Color = envelope.getColor();
+                                        text1 = input.getText().toString();
                                         break;
                                     case 2:
                                         currentCircle2Color = envelope.getColor();
+                                        text2 = input.getText().toString();
                                         break;
                                     case 3:
                                         currentCircle3Color = envelope.getColor();
+                                        text3 = input.getText().toString();
                                         break;
                                 }
                                 invalidate();
@@ -570,6 +619,50 @@ public class DoodleView extends View {
                         })
                 .attachAlphaSlideBar(true) // default is true. If false, do not show the AlphaSlideBar.
                 .attachBrightnessSlideBar(true)  // default is true. If false, do not show the BrightnessSlideBar.
+                .show();
+    }
+
+    public void DialogText(int n){
+        String texto="";
+        if(n==0){
+            texto="O que você ama?";
+        }
+        if(n==1){
+            texto="Em que voce é bom?";
+        }
+        if(n==2){
+            texto="Pelo que voce pode ser pago?";
+        }
+        if(n==3){
+            texto="O que o mundo precisa?";
+        }
+        EditText input = new EditText(getContext());
+        new AlertDialog.Builder(getContext())
+                .setTitle("IKIGAI")
+                .setMessage(texto)
+                .setView(input)
+                // Specifying a listener allows you to take an action before dismissing the dialog.
+                // The dialog is automatically dismissed when a dialog button is clicked.
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        if(n==0) {
+                            text0 = input.getText().toString();
+                        }
+                        if(n==1) {
+                            text1 = input.getText().toString();
+                        }
+                        if(n==2) {
+                            text2 = input.getText().toString();
+                        }
+                        if(n==3) {
+                            text3 = input.getText().toString();
+                        }
+                    }
+                })
+
+                // A null listener allows the button to dismiss the dialog and take no further action.
+                .setNegativeButton(android.R.string.no, null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
     }
 }

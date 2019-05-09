@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -99,6 +100,7 @@ public class DoodleView extends View {
         paintLine.setStyle(Paint.Style.STROKE);
         paintLine.setStrokeWidth(10);
         paintLine.setStrokeCap(Paint.Cap.ROUND);
+
         score = 0;
 //        round = 0;
     }
@@ -506,7 +508,11 @@ public class DoodleView extends View {
                 if(!goneFlag) {
                     //Code for single click
                     Toast.makeText(getContext(), "que merda2", Toast.LENGTH_SHORT).show();
-                    whichCircleTouch(event, 0);
+                    if(MainActivity.checked) {
+                        whichCircleTouch(event, 0);
+                    } else {
+                        whichCircleTouch(event, 1);
+                    }
                     return false;
                 }
                 break;

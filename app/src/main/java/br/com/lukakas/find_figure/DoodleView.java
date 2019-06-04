@@ -29,6 +29,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.PolyUtil;
 import com.skydoves.colorpickerview.ColorEnvelope;
 import com.skydoves.colorpickerview.ColorPickerDialog;
@@ -36,12 +41,16 @@ import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 import br.com.lukakas.find_figure.R;
 
 public class DoodleView extends View {
+
+    private FirebaseDatabase database;
+    private DatabaseReference ref;
 
     private static final int RADIUS = 200;
 
@@ -91,6 +100,8 @@ public class DoodleView extends View {
 
     private String text0="",text1="",text2="",text3="";
 
+    private ArrayList<String> list;
+
     public DoodleView (Context context, AttributeSet set){
         super (context, set);
         paintScreen = new Paint();
@@ -100,6 +111,9 @@ public class DoodleView extends View {
         paintLine.setStyle(Paint.Style.STROKE);
         paintLine.setStrokeWidth(10);
         paintLine.setStrokeCap(Paint.Cap.ROUND);
+
+        database = FirebaseDatabase.getInstance();
+        ref = database.getReference("texts");
 
         score = 0;
 //        round = 0;
@@ -116,6 +130,77 @@ public class DoodleView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+
+        list = new ArrayList<>();
+        ref.child("ama").addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                for (DataSnapshot ds : dataSnapshot.getChildren())
+                {
+                    String Name = (String) ((HashMap) dataSnapshot.getValue()).values().toArray()[0];
+                    list.add(Name);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+        ref.child("ama").limitToLast(1).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                text0 = (String) ((HashMap) dataSnapshot.getValue()).values().toArray()[0];
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+
+        ref.child("bom").limitToLast(1).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                text1 = (String) ((HashMap) dataSnapshot.getValue()).values().toArray()[0];
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+
+        ref.child("pago").limitToLast(1).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                text2 = (String) ((HashMap) dataSnapshot.getValue()).values().toArray()[0];
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+
+
+        ref.child("precisa").limitToLast(1).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                text3 = (String) ((HashMap) dataSnapshot.getValue()).values().toArray()[0];
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
 
         posicoes = gerarPosicoes();
 
@@ -507,7 +592,6 @@ public class DoodleView extends View {
                 }
                 if(!goneFlag) {
                     //Code for single click
-                    Toast.makeText(getContext(), "que merda2", Toast.LENGTH_SHORT).show();
                     if(MainActivity.checked) {
                         whichCircleTouch(event, 0);
                     } else {
@@ -526,7 +610,6 @@ public class DoodleView extends View {
 
     public void whichCircleTouch(MotionEvent event, int option){
         if(isOnCircle(event, 0)&&!isOnCircle(event,1)&&!isOnCircle(event,2)&&!isOnCircle(event,3)){
-            Toast.makeText(getContext(), "1", Toast.LENGTH_SHORT).show();
             if(option == 0) {
                 setByColorPicker(0);
             } else {
@@ -534,7 +617,6 @@ public class DoodleView extends View {
             }
         }
         else if(!isOnCircle(event,0)&&isOnCircle(event,1)&&!isOnCircle(event,2)&&!isOnCircle(event,3)){
-            Toast.makeText(getContext(), "2", Toast.LENGTH_SHORT).show();
             if(option == 0) {
                 setByColorPicker(1);
             } else {
@@ -542,7 +624,6 @@ public class DoodleView extends View {
             }
         }
         else if(!isOnCircle(event,0)&&!isOnCircle(event,1)&&isOnCircle(event,2)&&!isOnCircle(event,3)){
-            Toast.makeText(getContext(), "3", Toast.LENGTH_SHORT).show();
             if(option == 0) {
                 setByColorPicker(2);
             } else {
@@ -550,7 +631,6 @@ public class DoodleView extends View {
             }
         }
         else if(!isOnCircle(event,0)&&!isOnCircle(event,1)&&!isOnCircle(event,2)&&isOnCircle(event,3)){
-            Toast.makeText(getContext(), "4", Toast.LENGTH_SHORT).show();
             if(option == 0) {
                 setByColorPicker(3);
             } else {
@@ -559,16 +639,12 @@ public class DoodleView extends View {
         }
         //------------------------------------------------------------------------------------------
         else if(isOnCircle(event,0)&& isOnCircle(event,1)&&!isOnCircle(event,2)&& !isOnCircle(event,3)){
-            Toast.makeText(getContext(), "5", Toast.LENGTH_SHORT).show();
         }
         else if(isOnCircle(event,0)&&!isOnCircle(event,1)&&!isOnCircle(event,2)&& isOnCircle(event,3)){
-            Toast.makeText(getContext(), "6", Toast.LENGTH_SHORT).show();
         }
         else if(!isOnCircle(event,0)&&isOnCircle(event,1)&&isOnCircle(event,2)&& !isOnCircle(event,3)){
-            Toast.makeText(getContext(), "7", Toast.LENGTH_SHORT).show();
         }
         else if(!isOnCircle(event,0)&&!isOnCircle(event,1)&&isOnCircle(event,2)&& isOnCircle(event,3)){
-            Toast.makeText(getContext(), "8", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -599,6 +675,7 @@ public class DoodleView extends View {
                                     case 0:
                                         currentCircle0Color = envelope.getColor();
                                         text0 = input.getText().toString();
+
                                         break;
                                     case 1:
                                         currentCircle1Color = envelope.getColor();
@@ -643,25 +720,44 @@ public class DoodleView extends View {
             texto="O que o mundo precisa?";
         }
         EditText input = new EditText(getContext());
-        new AlertDialog.Builder(getContext())
-                .setTitle("IKIGAI")
-                .setMessage(texto)
-                .setView(input)
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle(texto)
+//                .setMessage(texto)
+                .setView(input);
+
+//            String[] animals = {"horse", "cow", "camel", "sheep", "goat"};
+            builder.setItems(list, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case 0: // horse
+                        case 1: // cow
+                        case 2: // camel
+                        case 3: // sheep
+                        case 4: // goat
+                    }
+                }
+            });
+
                 // Specifying a listener allows you to take an action before dismissing the dialog.
                 // The dialog is automatically dismissed when a dialog button is clicked.
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         if(n==0) {
                             text0 = input.getText().toString();
+                            ref.child("ama").push().setValue(text0);
                         }
                         if(n==1) {
                             text1 = input.getText().toString();
+                            ref.child("bom").push().setValue(text1);
                         }
                         if(n==2) {
                             text2 = input.getText().toString();
+                            ref.child("pago").push().setValue(text2);
                         }
                         if(n==3) {
                             text3 = input.getText().toString();
+                            ref.child("precisa").push().setValue(text3);
                         }
                     }
                 })

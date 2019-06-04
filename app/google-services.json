@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "777073505313",
+    "firebase_url": "https://ikigai-17c38.firebaseio.com",
+    "project_id": "ikigai-17c38",
+    "storage_bucket": "ikigai-17c38.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:777073505313:android:af04c5af711cc33c",
+        "android_client_info": {
+          "package_name": "br.com.lukakas.find_figure"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "777073505313-g6skduc2qkla26mnjnjn4am6tmqsu7rn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEH_BAaTH5D5uyAdj7t6xr3bhdw-Ltj-E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "777073505313-g6skduc2qkla26mnjnjn4am6tmqsu7rn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

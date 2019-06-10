@@ -98,9 +98,12 @@ public class DoodleView extends View {
 
     private boolean firstTime = true;
 
-    private String text0="",text1="",text2="",text3="";
+    private String  text0 = MainActivity.text0,
+                    text1 = MainActivity.text1,
+                    text2 = MainActivity.text2,
+                    text3 = MainActivity.text3;
 
-    private ArrayList<String> list;
+//    private ArrayList<String> list;
 
     public DoodleView (Context context, AttributeSet set){
         super (context, set);
@@ -130,77 +133,6 @@ public class DoodleView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-
-        list = new ArrayList<>();
-        ref.child("ama").addValueEventListener(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                for (DataSnapshot ds : dataSnapshot.getChildren())
-                {
-                    String Name = (String) ((HashMap) dataSnapshot.getValue()).values().toArray()[0];
-                    list.add(Name);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
-
-        ref.child("ama").limitToLast(1).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                text0 = (String) ((HashMap) dataSnapshot.getValue()).values().toArray()[0];
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
-
-        ref.child("bom").limitToLast(1).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                text1 = (String) ((HashMap) dataSnapshot.getValue()).values().toArray()[0];
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
-
-        ref.child("pago").limitToLast(1).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                text2 = (String) ((HashMap) dataSnapshot.getValue()).values().toArray()[0];
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
-
-
-        ref.child("precisa").limitToLast(1).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                text3 = (String) ((HashMap) dataSnapshot.getValue()).values().toArray()[0];
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
 
         posicoes = gerarPosicoes();
 
@@ -707,17 +639,22 @@ public class DoodleView extends View {
 
     public void DialogText(int n){
         String texto="";
+        ArrayList<String> list = new ArrayList<>();
         if(n==0){
             texto="O que você ama?";
+            list = MainActivity.listAma;
         }
         if(n==1){
             texto="Em que voce é bom?";
+            list = MainActivity.listBom;
         }
         if(n==2){
             texto="Pelo que voce pode ser pago?";
+            list = MainActivity.listPago;
         }
         if(n==3){
             texto="O que o mundo precisa?";
+            list = MainActivity.listPrecisa;
         }
         EditText input = new EditText(getContext());
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -726,15 +663,21 @@ public class DoodleView extends View {
                 .setView(input);
 
 //            String[] animals = {"horse", "cow", "camel", "sheep", "goat"};
-            builder.setItems(list, new DialogInterface.OnClickListener() {
+        ArrayList<String> finalList = list;
+        builder.setItems(list.toArray(new String[0]), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    switch (which) {
-                        case 0: // horse
-                        case 1: // cow
-                        case 2: // camel
-                        case 3: // sheep
-                        case 4: // goat
+                    if(n==0) {
+                        text0 = finalList.get(which);
+                    }
+                    if(n==1) {
+                        text1 = finalList.get(which);
+                    }
+                    if(n==2) {
+                        text2 = finalList.get(which);
+                    }
+                    if(n==3) {
+                        text3 = finalList.get(which);
                     }
                 }
             });
